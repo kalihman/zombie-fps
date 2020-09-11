@@ -38,6 +38,19 @@ public class EnemyFSM : MonoBehaviour
     // 공격 딜레이 시간
     float attackDelay = 2f;
 
+    // 에너미의 공격력
+    public int attackPower = 3;
+
+    // 초기 위치 저장용 변수
+    Vector3 originPos;
+
+    // 이동 가능 범위
+    public float moveDistance = 20f;
+
+    public int hp = 15;
+
+    public int weaponPower = 5;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +59,9 @@ public class EnemyFSM : MonoBehaviour
         player = GameObject.Find("Player").transform;
 
         cc = GetComponent<CharacterController>();
+
+        // 초기 위치
+        originPos = transform.position;
     }
 
     // Update is called once per frame
@@ -66,10 +82,10 @@ public class EnemyFSM : MonoBehaviour
                 Return();
                 break;
             case EnemyState.Damaged:
-                Damaged();
+                //Damaged();
                 break;
             case EnemyState.Die:
-                Die();
+                //Die();
                 break;
         }
     }
@@ -106,6 +122,7 @@ public class EnemyFSM : MonoBehaviour
             currentTime += Time.deltaTime;
             if(currentTime > attackDelay)
             {
+                player.GetComponent<PlayerMove>().DamageAction(attackPower);
                 currentTime = 0;
                 print("공격");
             }
@@ -118,16 +135,68 @@ public class EnemyFSM : MonoBehaviour
             currentTime = 0;
         }
     }
+
     void Return()
     {
 
     }
+
+    public void HitEnemy(int hitPower)
+    {
+        // 만일 이미 피격 상태이거나 사망 상태 또는 복귀 상태라면 아무런 처리도 하지 않고 함수를 종료한다.
+        if (m_State == EnemyState.Damaged || m_State == EnemyState.Die || m_State == EnemyState.Return)
+        {
+            return;
+        }
+
+        hp -= hitPower;
+
+        if(hp > 0)
+        {
+            m_State = EnemyState.Damaged;
+            print("상태 전환: Any stat -> Damaged");
+            Damaged();
+        }
+        else
+        {
+            m_State = EnemyState.Die;
+            print("상태 전환: Any state -> Die");
+            Die();
+        }
+    }
+
     void Damaged()
     {
-
+        StartCoroutine(DamageProcess());
     }
+
+    IEnumerator DamageProcess()
+    {
+        // 피격 모셥 시간만큼 기다린다.
+        yield return new WaitForSeconds(0.5f);
+
+        // 현재 상태를 이동 상태로 전환한다.
+        m_State = EnemyState.Move;
+        print("상태 전환: Damaged -> Move");
+    }
+
     void Die()
     {
+        // 진행중인 코루틴(데미지, 이동 등) 모두 종료
+        StopAllCoroutines();
 
+        // 죽음 상태 처리를 위한 코루틴 실행
+        StartCoroutine(DieProcess());
+    }
+
+    IEnumerator DieProcess()
+    {
+        // 캐릭터 컴포넌트 비활성화
+        cc.enabled = false;
+
+        // 2초 동안 기다린 후에 자기 자신을 제거
+        yield return new WaitForSeconds(2f);
+        print("소멸!");
+        Destroy(gameObject);
     }
 }

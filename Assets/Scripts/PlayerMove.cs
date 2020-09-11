@@ -22,6 +22,8 @@ public class PlayerMove : MonoBehaviour
     // 점프 상태 변수
     public bool isJumping = false;
 
+    public int hp = 10;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,5 +66,10 @@ public class PlayerMove : MonoBehaviour
         // 이동. p = p0 + vt
         // transform.position += dir * moveSpeed * Time.deltaTime;
         cc.Move(dir * moveSpeed * Time.deltaTime);
+    }
+
+    public void DamageAction(int damage)
+    {
+        hp -= damage;
     }
 }

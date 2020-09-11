@@ -11,6 +11,8 @@ public class PlayerFire : MonoBehaviour
     public GameObject bulletEffect;
     ParticleSystem ps;
 
+    public int weaponPower = 5;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,11 +38,17 @@ public class PlayerFire : MonoBehaviour
 
             if (Physics.Raycast(ray, out hitInfo))
             {
-                bulletEffect.transform.position = hitInfo.point;
-
-                bulletEffect.transform.forward = hitInfo.normal;
-
-                ps.Play();
+                if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+                {
+                    EnemyFSM eFSM = hitInfo.transform.GetComponent<EnemyFSM>();
+                    eFSM.HitEnemy(weaponPower);
+                }
+                else
+                {
+                    bulletEffect.transform.position = hitInfo.point;
+                    bulletEffect.transform.forward = hitInfo.normal;
+                    ps.Play();
+                }
             }
         }
     }
