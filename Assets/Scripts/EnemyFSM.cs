@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -47,9 +48,13 @@ public class EnemyFSM : MonoBehaviour
     // 이동 가능 범위
     public float moveDistance = 20f;
 
+    public int weaponPower = 5;
+
     public int hp = 15;
 
-    public int weaponPower = 5;
+    int maxHp = 15;
+
+    public Slider hpSlider;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +72,8 @@ public class EnemyFSM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        hpSlider.value = (float)hp / (float)maxHp;
+
         switch(m_State)
         {
             case EnemyState.Idle:
