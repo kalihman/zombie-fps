@@ -31,6 +31,9 @@ public class PlayerMove : MonoBehaviour
     // hp 슬라이더 변수
     public Slider hpSlider;
 
+    // Hit 효과 오브젝트
+    public GameObject hitEffect;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -81,5 +84,23 @@ public class PlayerMove : MonoBehaviour
     public void DamageAction(int damage)
     {
         hp -= damage;
+
+        if (hp > 0)
+        {
+            // 피격 이펙트 코루틴을 시작한다
+            StartCoroutine(PlayHitEffect());
+        }
+    }
+
+    IEnumerator PlayHitEffect()
+    {
+        // 1. 피격 UI를 활성화
+        hitEffect.SetActive(true);
+
+        // 2. 0.3초간 대기한다.
+        yield return new WaitForSeconds(0.3f);
+
+        // 3. 피격 UI를 비활성화한다.
+        hitEffect.SetActive(false);
     }
 }
