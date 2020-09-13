@@ -45,6 +45,9 @@ public class EnemyFSM : MonoBehaviour
     // 초기 위치 저장용 변수
     Vector3 originPos;
 
+    // 초기 회전값 저장용 변수
+    Quaternion originRot;
+
     // 이동 가능 범위
     public float moveDistance = 20f;
 
@@ -55,6 +58,8 @@ public class EnemyFSM : MonoBehaviour
     int maxHp = 15;
 
     public Slider hpSlider;
+
+    Animator anim;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +72,11 @@ public class EnemyFSM : MonoBehaviour
 
         // 초기 위치
         originPos = transform.position;
+
+        // 초기 회전
+        originRot = transform.rotation;
+
+        anim = transform.GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -103,14 +113,25 @@ public class EnemyFSM : MonoBehaviour
         {
             m_State = EnemyState.Move;
             print("상태 전환: Idle -> Move");
+
+            // animation 트리거
+            anim.SetTrigger("IdleToMove");
         }
     }
 
     void Move()
     {
-        if(Vector3.Distance(transform.position, player.position) > attackDistance)
+        if(Vector3.Distance(originPos, transform.position) > moveDistance)
+        {
+            m_State = EnemyState.Return;
+            print("상태 전환: Move -> Return");
+        }
+        else if(Vector3.Distance(transform.position, player.position) > attackDistance)
         {
             Vector3 dir = (player.position - transform.position).normalized;
+
+            // 전방 방향을 이동 방향과 일치시킴
+            transform.forward = dir;
 
             cc.Move(dir * moveSpeed * Time.deltaTime);
         }
@@ -145,7 +166,31 @@ public class EnemyFSM : MonoBehaviour
 
     void Return()
     {
+        // 만일 초기 위치에서의 거리가 0.1f 이상이라면 초기 위치 쪽으로 이동한다
+        if(Vector3.Distance(transform.position, originPos) > 0.1f)
+        {
+            Vector3 dir = (originPos - transform.position).normalized;
 
+            cc.Move(dir * moveSpeed * Time.deltaTime);
+
+            // 복귀 지점(원래 위치)로 전환
+            transform.forward = dir;
+        }
+        else
+        {
+            // 원위치, 회전
+            transform.position = originPos;
+            transform.rotation = originRot;
+
+            // hp를 다시 회복
+            hp = maxHp;
+
+            m_State = EnemyState.Idle;
+            print("상태 전환: Return -> Idle");
+
+            // 대기 애니메이션으로 전환하는 트렌지션 호출
+            anim.SetTrigger("MoveToIdle");
+        }
     }
 
     public void HitEnemy(int hitPower)
