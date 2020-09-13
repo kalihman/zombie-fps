@@ -18,6 +18,12 @@ public class CamRotate : MonoBehaviour
 
     void Update()
     {
+        // 게임 진행중 아니면 update 스킵
+        if(GameManager.gm.gState != GameManager.GameState.Run)
+        {
+            return;
+        }
+
         // 마우스 입력
         float mouse_X = Input.GetAxis("Mouse X");
         float mouse_Y = Input.GetAxis("Mouse Y");

@@ -43,6 +43,12 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // 게임 진행중 아니면 update 스킵
+        if(GameManager.gm.gState != GameManager.GameState.Run)
+        {
+            return;
+        }
+
         // 사용자 입력
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
