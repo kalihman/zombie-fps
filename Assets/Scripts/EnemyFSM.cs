@@ -130,16 +130,18 @@ public class EnemyFSM : MonoBehaviour
         {
             Vector3 dir = (player.position - transform.position).normalized;
 
+            cc.Move(dir * moveSpeed * Time.deltaTime);
+
             // 전방 방향을 이동 방향과 일치시킴
             transform.forward = dir;
-
-            cc.Move(dir * moveSpeed * Time.deltaTime);
         }
         else
         {
             m_State = EnemyState.Attack;
             print("상태 전환: Move -> Attack");
             currentTime = attackDelay;
+
+            anim.SetTrigger("MoveToAttackDelay");
         }
     }
 
@@ -150,9 +152,10 @@ public class EnemyFSM : MonoBehaviour
             currentTime += Time.deltaTime;
             if(currentTime > attackDelay)
             {
-                player.GetComponent<PlayerMove>().DamageAction(attackPower);
+                // player.GetComponent<PlayerMove>().DamageAction(attackPower);
                 currentTime = 0;
                 print("공격");
+                anim.SetTrigger("StartAttack");
             }
         }
         // 그렇지 않다면, 현재 상태를 이동으로 전환한다
@@ -161,7 +164,13 @@ public class EnemyFSM : MonoBehaviour
             m_State = EnemyState.Move;
             print("상태 전환: Attack -> Move");
             currentTime = 0;
+            anim.SetTrigger("AttackToMove");
         }
+    }
+
+    public void AttackAction()
+    {
+        player.GetComponent<PlayerMove>().DamageAction(attackPower);
     }
 
     void Return()
@@ -207,12 +216,15 @@ public class EnemyFSM : MonoBehaviour
         {
             m_State = EnemyState.Damaged;
             print("상태 전환: Any stat -> Damaged");
+
+            anim.SetTrigger("Damaged");
             Damaged();
         }
         else
         {
             m_State = EnemyState.Die;
             print("상태 전환: Any state -> Die");
+            anim.SetTrigger("Die");
             Die();
         }
     }
@@ -225,7 +237,7 @@ public class EnemyFSM : MonoBehaviour
     IEnumerator DamageProcess()
     {
         // 피격 모셥 시간만큼 기다린다.
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
 
         // 현재 상태를 이동 상태로 전환한다.
         m_State = EnemyState.Move;
