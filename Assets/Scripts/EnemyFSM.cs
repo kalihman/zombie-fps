@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -61,6 +62,8 @@ public class EnemyFSM : MonoBehaviour
 
     Animator anim;
 
+    NavMeshAgent smith;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -77,6 +80,8 @@ public class EnemyFSM : MonoBehaviour
         originRot = transform.rotation;
 
         anim = transform.GetComponentInChildren<Animator>();
+
+        smith = GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
@@ -128,12 +133,22 @@ public class EnemyFSM : MonoBehaviour
         }
         else if(Vector3.Distance(transform.position, player.position) > attackDistance)
         {
-            Vector3 dir = (player.position - transform.position).normalized;
+            // Vector3 dir = (player.position - transform.position).normalized;
 
-            cc.Move(dir * moveSpeed * Time.deltaTime);
+            // cc.Move(dir * moveSpeed * Time.deltaTime);
 
             // 전방 방향을 이동 방향과 일치시킴
-            transform.forward = dir;
+            // transform.forward = dir;
+
+            // 네비게이션 에이전트의 이동을 멈추고 경로를 초기화
+            smith.isStopped = true;
+            smith.ResetPath();
+
+            // 네비게이션으로 접근하는 최소 거리를 공격 가능 거리로 설정
+            smith.stoppingDistance = attackDistance;
+
+            // 네비게이션 목적지를 플레이어 위치로 설정
+            smith.destination = player.position;
         }
         else
         {
@@ -178,15 +193,25 @@ public class EnemyFSM : MonoBehaviour
         // 만일 초기 위치에서의 거리가 0.1f 이상이라면 초기 위치 쪽으로 이동한다
         if(Vector3.Distance(transform.position, originPos) > 0.1f)
         {
-            Vector3 dir = (originPos - transform.position).normalized;
+            // Vector3 dir = (originPos - transform.position).normalized;
 
-            cc.Move(dir * moveSpeed * Time.deltaTime);
+            // cc.Move(dir * moveSpeed * Time.deltaTime);
 
             // 복귀 지점(원래 위치)로 전환
-            transform.forward = dir;
+            // transform.forward = dir;
+
+            // 네비게이션의 목적지를 초기 저장된 위치로 설정
+            smith.destination = originPos;
+
+            // 네비게이션으로 접근하는 최소 거리를 '0'으로 설정
+            smith.stoppingDistance = 0;
         }
         else
         {
+            // 네비게이션 에이전트의 이동을 멈추고 경로를 초기화
+            smith.isStopped = true;
+            smith.ResetPath();
+
             // 원위치, 회전
             transform.position = originPos;
             transform.rotation = originRot;
@@ -211,6 +236,10 @@ public class EnemyFSM : MonoBehaviour
         }
 
         hp -= hitPower;
+
+        // 네비게이션 에이전트의 이동을 멈추고 경로를 초기화
+        smith.isStopped = true;
+        smith.ResetPath();
 
         if(hp > 0)
         {
