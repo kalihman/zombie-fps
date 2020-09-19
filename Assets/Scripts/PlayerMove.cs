@@ -34,11 +34,17 @@ public class PlayerMove : MonoBehaviour
     // Hit 효과 오브젝트
     public GameObject hitEffect;
 
+    Animator anim;
+
     // Start is called before the first frame update
     void Start()
     {
-        cc = GetComponent<CharacterController>();  
+        cc = GetComponent<CharacterController>();
+
+        // 애니메이터 받아오기
+        anim = GetComponentInChildren<Animator>();
     }
+
 
     // Update is called once per frame
     void Update()
@@ -56,6 +62,9 @@ public class PlayerMove : MonoBehaviour
         // 이동 방향 설정
         Vector3 dir = new Vector3(h, 0, v);
         dir = dir.normalized;
+
+        // 이동 블렌딩 트리를 호출하고 벡터의 크기 값을 넘겨준다.
+        anim.SetFloat("MoveMotion", dir.magnitude);
 
         // 카메라 기준으로 방향 변환
         dir = Camera.main.transform.TransformDirection(dir);
