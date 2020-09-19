@@ -15,12 +15,22 @@ public class PlayerFire : MonoBehaviour
 
     Animator anim;
 
+    enum WeaponMode
+    {
+        Normal,
+        Sniper
+    }
+
+    bool ZoomMode = false;
+
     // Start is called before the first frame update
     void Start()
     {
         ps = bulletEffect.GetComponent<ParticleSystem>();
 
         anim = GetComponentInChildren<Animator>();
+
+        WeaponMode = WeaponMode.Normal;
     }
 
     // Update is called once per frame
@@ -34,6 +44,34 @@ public class PlayerFire : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
+            switch (wMode)
+            {
+                case WeaponMode.Normal:
+                    // 수류탄 오브젝트를 생성하고, 수류탄의 생성 위치를 발사 위치로 한다
+                    GameObject bomb = Instantiate(bombFactory);
+                    bomb.transform.position = firePosition.transform.position;
+
+                    // 수류탄 오브젝트의 리지드보디 컴포넌트를 가져온다
+                    Rigidbody rb = bomb.GetComponent<RigidBody>();
+
+                    // 카메라의 정면 방향으로 수류탄에 물리적인 힘을 가한다.
+                    rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
+
+                    break;
+                case WeaponMode.Sniper:
+                    if (!ZoomMode)
+                    {
+                        Camera.main.fieldOfView = 15f;
+                         ZoomMode = true;
+                    }
+                    else
+                    {
+                        Camera.main.fieldOfView = 60f;
+                        ZoomMode = false;
+                    }
+                    break;
+            }
+
             GameObject bomb = Instantiate(bombFactory);
             bomb.transform.position = firePosition.transform.position;
 
@@ -65,6 +103,17 @@ public class PlayerFire : MonoBehaviour
                     ps.Play();
                 }
             }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            WeaponMode = WeaponMode.Normal;
+
+            // 카메라의 화면을 다시 원래대로 돌림
+            Camera.main.fieldOfView = 60f;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            WeaponMode = WeaponMode.Sniper;
         }
     }
 }
