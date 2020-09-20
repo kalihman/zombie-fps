@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerFire : MonoBehaviour
 {
     public GameObject firePosition;
     public GameObject bombFactory;
+
     public float throwPower = 15f;
 
     public GameObject bulletEffect;
@@ -23,6 +25,10 @@ public class PlayerFire : MonoBehaviour
 
     bool ZoomMode = false;
 
+    WeaponMode wMode;
+
+    public Text wModeText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +36,7 @@ public class PlayerFire : MonoBehaviour
 
         anim = GetComponentInChildren<Animator>();
 
-        WeaponMode = WeaponMode.Normal;
+        wMode = WeaponMode.Normal;
     }
 
     // Update is called once per frame
@@ -52,17 +58,16 @@ public class PlayerFire : MonoBehaviour
                     bomb.transform.position = firePosition.transform.position;
 
                     // 수류탄 오브젝트의 리지드보디 컴포넌트를 가져온다
-                    Rigidbody rb = bomb.GetComponent<RigidBody>();
+                    Rigidbody rb = bomb.GetComponent<Rigidbody>();
 
                     // 카메라의 정면 방향으로 수류탄에 물리적인 힘을 가한다.
                     rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
-
                     break;
                 case WeaponMode.Sniper:
                     if (!ZoomMode)
                     {
                         Camera.main.fieldOfView = 15f;
-                         ZoomMode = true;
+                        ZoomMode = true;
                     }
                     else
                     {
@@ -71,12 +76,6 @@ public class PlayerFire : MonoBehaviour
                     }
                     break;
             }
-
-            GameObject bomb = Instantiate(bombFactory);
-            bomb.transform.position = firePosition.transform.position;
-
-            Rigidbody rb = bomb.GetComponent<Rigidbody>();
-            rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -106,14 +105,18 @@ public class PlayerFire : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            WeaponMode = WeaponMode.Normal;
+            wMode = WeaponMode.Normal;
 
             // 카메라의 화면을 다시 원래대로 돌림
             Camera.main.fieldOfView = 60f;
+
+            wModeText.text = "Normal Mode";
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            WeaponMode = WeaponMode.Sniper;
+            wMode = WeaponMode.Sniper;
+
+            wModeText.text = "Sniper Mode";
         }
     }
 }
