@@ -29,6 +29,8 @@ public class PlayerFire : MonoBehaviour
 
     public Text wModeText;
 
+    public GameObject[] eff_Flash;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -102,7 +104,10 @@ public class PlayerFire : MonoBehaviour
                     ps.Play();
                 }
             }
+
+            StartCoroutine(ShootEffectOn(0.05f));
         }
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             wMode = WeaponMode.Normal;
@@ -118,5 +123,20 @@ public class PlayerFire : MonoBehaviour
 
             wModeText.text = "Sniper Mode";
         }
+    }
+
+    IEnumerator ShootEffectOn(float duration)
+    {
+        // 랜덤 숫자
+        int num = Random.Range(0, eff_Flash.Length - 1);
+
+        // 이펙트 오브젝트 배열에서 뽑힌 숫자에 해당하는 이펙트 오브젝트 활성화
+        eff_Flash[num].SetActive(true);
+
+        // 지정한 시간만큼 기다림
+        yield return new WaitForSeconds(duration);
+
+        // 이펙트 오브젝트를 다시 비활성화
+        eff_Flash[num].SetActive(false);
     }
 }
