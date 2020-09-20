@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
     {
         Ready,
         Run,
+        Pause,
         GameOver
     }
 
@@ -31,6 +33,8 @@ public class GameManager : MonoBehaviour
     Text gameText;
 
     PlayerMove player;
+
+    public GameObject gameOption;
     
     // Start is called before the first frame update
     void Start()
@@ -64,6 +68,12 @@ public class GameManager : MonoBehaviour
             gameLabel.SetActive(true);
             gameText.text = "Game Over";
             gameText.color = new Color32(255, 0, 0, 255);
+
+            // 상태 텍스트의 자식 오브젝트의 트랜스폼 컴포넌트를 가져옴
+            Transform buttons = gameText.transform.GetChild(0);
+
+            // 버튼 오브젝트를 활성화한다
+            buttons.gameObject.SetActive(true);
             
             // 게임 오버 상태로 변경
             gState = GameState.GameOver;
@@ -86,5 +96,41 @@ public class GameManager : MonoBehaviour
 
         // 상태를 '게임 중'으로 변경
         gState = GameState.Run;
+    }
+
+    // 옵션 화면 켜기
+    public void OpenOptionWindow()
+    {
+        // 옵션창 활성화
+        gameOption.SetActive(true);
+
+        // 게임 속도를 0배속으로 전환
+        Time.timeScale = 0f;
+
+        // 게임 상태를 일시 정지 상태로 변경
+        gState = GameState.Pause;
+    }
+
+    // 계속하기 옵션
+    public void CloseOptionWindow()
+    {
+        gameOption.SetActive(false);
+        Time.timeScale = 1f;
+        gState = GameState.Run;
+    }
+
+    public void RestartGame()
+    {
+        // 게임 속도를 1배속으로 전환
+        Time.timeScale = 1f;
+
+        // 현재 씬 번호를 다시 로드
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void QuitGame()
+    {
+        // 게임 종료
+        Application.Quit();
     }
 }
