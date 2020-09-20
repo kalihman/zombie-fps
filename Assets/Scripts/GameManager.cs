@@ -125,7 +125,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
 
         // 현재 씬 번호를 다시 로드
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        // 로딩 화면씬을 로드
+        SceneManager.LoadScene(1);
     }
 
     public void QuitGame()
