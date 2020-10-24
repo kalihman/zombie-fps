@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Cinemachine;
+using UnityEngine.Playables;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,31 +37,56 @@ public class GameManager : MonoBehaviour
     PlayerMove player;
 
     public GameObject gameOption;
-    
+
+    bool optionActive = false;
+
+    public Canvas canvas;
+
+    PlayableDirector pd;
+
     // Start is called before the first frame update
     void Start()
     {
         gState = GameState.Ready;
 
+        pd = GameObject.Find("Director").GetComponent<PlayableDirector>();
+
+        // Disable UI
+        canvas = canvas.GetComponent<Canvas>();
+        canvas.gameObject.SetActive(false);
+
+        // 커서 중앙 잠금 후 가리기
+        LockCursor();
+        
         // 게임 상태 UI 오브젝트에서 Text 컴포넌트를 가져온다.
         gameText = gameLabel.GetComponent<Text>();
-
-        // Text 변경 후 활성화
-        gameText.text = "Ready...";
-        gameText.color = new Color32(255, 185, 0, 255);
-        gameLabel.SetActive(true);
 
         // 준비 완료 코루틴
         StartCoroutine(ReadyToStart());
 
         // 플레이어 오브젝트 확보
         player = GameObject.Find("Player").GetComponent<PlayerMove>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(player.hp <= 0)
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(optionActive == false)
+            {
+                optionActive = true;
+                OpenOptionWindow();
+            }
+            else
+            {
+                optionActive = false;
+                CloseOptionWindow();
+            }
+        }
+
+        if(player.hp <= 0 || GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
         {
             // 플레이어의 애니메이션을 멈춘다.
             player.GetComponentInChildren<Animator>().SetFloat("MoveMotion", 0f); 
@@ -77,14 +104,21 @@ public class GameManager : MonoBehaviour
             
             // 게임 오버 상태로 변경
             gState = GameState.GameOver;
+
+            // 커서 중앙 비활성화
+            UnlockCursor();
         }
     }
 
     IEnumerator ReadyToStart()
     {
-        // 2초간 대기
-        yield return new WaitForSeconds(2f);
+        // Text 변경 후 활성화
+        gameText.color = new Color32(255, 185, 0, 255);
+        gameLabel.SetActive(true);
 
+        yield return new WaitForSeconds((float)pd.duration);
+        canvas.gameObject.SetActive(true);
+        
         // 상대 텍스트의 내용을 'Go!'로 한다
         gameText.text = "Go!";
 
@@ -109,6 +143,9 @@ public class GameManager : MonoBehaviour
 
         // 게임 상태를 일시 정지 상태로 변경
         gState = GameState.Pause;
+
+        // 커서 중앙 비활성화
+        UnlockCursor();
     }
 
     // 계속하기 옵션
@@ -117,6 +154,9 @@ public class GameManager : MonoBehaviour
         gameOption.SetActive(false);
         Time.timeScale = 1f;
         gState = GameState.Run;
+
+        // 커서 중앙 활성화
+        LockCursor();
     }
 
     public void RestartGame()
@@ -135,5 +175,17 @@ public class GameManager : MonoBehaviour
     {
         // 게임 종료
         Application.Quit();
+    }
+
+    public void LockCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public void UnlockCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 }
