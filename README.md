@@ -2,6 +2,13 @@
 
 Unity practice project
 
+## How to use
+
+```
+git install lfs
+git pull https://github.com/kalihman/zombie-fps.git
+```
+
 ## TODOs
 - [ ] Run 상태 아닐때 마우스 중앙고정
 - [ ] 시네마틱일때 준비 화면 제거
