@@ -2702,8 +2702,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 239838487}
-  m_LocalRotation: {x: 0.0058606924, y: -0.7070825, z: 0.0058606914, w: 0.70708257}
-  m_LocalPosition: {x: 9.38, y: 1.75, z: 0}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 2, y: 1.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -24091,9 +24091,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 7
-  jumpPower: 10
+  jumpPower: 3.5
   isJumping: 0
-  hp: 10
+  hp: 20
   hpSlider: {fileID: 653368449}
   hitEffect: {fileID: 1916635208}
 --- !u!114 &1529716681
