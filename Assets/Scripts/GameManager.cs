@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     bool optionActive = false;
 
-    public Canvas canvas;
+    // public Canvas canvas;
 
     PlayableDirector pd;
 
@@ -52,8 +52,8 @@ public class GameManager : MonoBehaviour
         pd = GameObject.Find("Director").GetComponent<PlayableDirector>();
 
         // Disable UI
-        canvas = canvas.GetComponent<Canvas>();
-        canvas.gameObject.SetActive(false);
+        // canvas = canvas.GetComponent<Canvas>();
+        // canvas.gameObject.SetActive(false);
 
         // 커서 중앙 잠금 후 가리기
         LockCursor();
@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviour
         gameLabel.SetActive(true);
 
         yield return new WaitForSeconds((float)pd.duration);
-        canvas.gameObject.SetActive(true);
+        // canvas.gameObject.SetActive(true);
         
         // 상대 텍스트의 내용을 'Go!'로 한다
         gameText.text = "Go!";
