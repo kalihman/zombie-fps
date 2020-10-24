@@ -1,6 +1,6 @@
 # Zombie FPS
 
-Unity practice test
+Unity practice project
 
 ## TODOs
 - [ ] Run 상태 아닐때 마우스 중앙고정
@@ -12,3 +12,4 @@ Unity practice test
 - [ ] 수류탄 투척 궤도 좀더 위쪽으로 수정
 - [ ] 좀비 전부 제거 게임 엔딩 조건으로 추가
 - [ ] 사용하지 않는 에셋 제거하여 용량 최적화
+- [ ] 시네마틱일때 마우스와 UI 제거
